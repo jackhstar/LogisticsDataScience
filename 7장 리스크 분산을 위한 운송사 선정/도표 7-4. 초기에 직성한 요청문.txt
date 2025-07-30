@@ -1,0 +1,156 @@
+화주가 요청하는 3가지 제약조건을 충족하면서, 
+총 운송비를 최소화하는 운송사별 운송구간별 트럭유형별 트럭대수를 구한다.
+- 첨부한 기존 코드 순서와 변수명 등을 최대한 유지하면서, 신규제약만을 추가 반영한다.
+- pulp 라이브러리를 사용하여 최적화한다.
+- 코랩에서 수행할 파이썬코드만 제공한다.
+
+화주가 요청하는 3가지 제약조건은 아래와 같다.
+1) 운송구간별 트럭유형별 필요대수를 충족한다. H열에서 J열까지 순차적으로 저장되어 있다.
+2) 최대 선택 가능한 운송사 수는 MAX_TRUCKER_NUM 이다. 즉 선택된 운송사의 총 개수는 MAX_TRUCKER_NUM보다 작거나 같다.
+3) 운송구간별 트럭유형별 필요대수 곱하기 최소운송사비율(MIN_RATIO)에 대해 올림한 자연수를 X_MIM이라고 한다. 
+   X_MIM 대는 운송단가가 최소값인 운송사, 즉 TRUCKER_MIN을 선택한다.  
+   운송구간별 트럭유형별 필요대수 중 나머지 필요한 트럭대수는 (운송구간별 트럭유형별 필요대수 - X_MIN) 이며, X_NEXT이라고 한다. 
+   X_NEXT는 TRUCKER_MIN이 아닌 운송사 중에서 해당 운송구간별 트럭유형별 운송단가가 가장 낮은 운송사 즉, TRUCKER_NEXT에 할당한다.
+   모든 운송구간별 트럭유형에 대하여 (TRUCKER_MIN의 X_MIM + TRUCKER_NEXT의 X_NEXT)는 운송구간별 트럭유형별 필요대수를 충족한다.
+
+운송사별 운송구간별 트럭유형별 운송단가와 트럭대수는 A열에서 E열까지 순차적으로 저장되어 있다.
+- 운송비(D열)는 해당 운송사가 해당 운송구간을 해당 트럭유형으로 1대의 트럭은 운송할 때의 운송단가이다.
+- 트럭대수(E열)는 해당 운송사가 해당 운송구간의 해당 트럭유형에 대하여 확보하고 있는 트럭대수이다.
+- 최대 선택 가능한 운송사 수(MAX_TRUCKER_NUM)는 M열에 있다.
+- 최소운송사비율(MIN_RATIO)은 엑셀기준 P열의 값이다.
+
+기준정보는 "/content/sample_data/ 3개운송사_할당제약_기준정보.xlsx"이다.
+해의 결과는 운송사, 운송구간, 트럭유형, 운송단가, 선택된트럭수를 테이블 형태로 엑셀로 저장한다(3개운송사_할당제약_최적화결과.xlsx).
+- 파일을 읽고 저장하는 경로는 /content/sample_data/ 이다.
+- 총 비용을 계산하여 화면에 출력한다.
+- 프로그램 수행시간을 화면에 출력한다.
+
+[기존코드]
+import pandas as pd
+import time
+import pulp
+from pulp import LpProblem, LpMinimize, LpVariable, lpSum, LpInteger, value
+
+def optimize_truck_assignment():
+    start_time = time.time()
+
+    #--------------------------------------------------------
+    # 1) 엑셀에서 데이터 읽어오기
+    #--------------------------------------------------------
+    input_file = "/content/sample_data/운송사_기준정보.xlsx"
+
+    # A~E열: (운송사, 운송구간, 트럭유형, 운송단가, 트럭대수)
+    df = pd.read_excel(input_file, sheet_name=0, usecols="A:E")
+
+    # H~J열: (운송구간, 트럭유형, 필요대수)
+    df_demand = pd.read_excel(input_file, sheet_name=0, usecols="H:J")
+    df_demand.columns = ['운송구간', '트럭유형', '필요대수']
+
+    # M열: 최대 선택 가능한 운송사 수
+    max_trucker_num = pd.read_excel(input_file, sheet_name=0, usecols="M").iloc[0, 0]
+
+    # 데이터 클리닝
+    df['운송단가'] = pd.to_numeric(df['운송단가'], errors='coerce')
+    df['트럭대수'] = pd.to_numeric(df['트럭대수'], errors='coerce')
+    df_demand['필요대수'] = pd.to_numeric(df_demand['필요대수'], errors='coerce')
+
+    df.dropna(subset=['운송단가', '트럭대수'], inplace=True)
+    df_demand.dropna(subset=['필요대수'], inplace=True)
+
+    #--------------------------------------------------------
+    # 2) 파라미터 구성
+    #--------------------------------------------------------
+    cost_dict = {}      # {(운송사, 구간, 트럭유형): 단가}
+    capacity_dict = {}  # {(운송사, 구간, 트럭유형): 트럭대수}
+    for _, row in df.iterrows():
+        key = (row['운송사'], row['운송구간'], row['트럭유형'])
+        cost_dict[key] = row['운송단가']
+        capacity_dict[key] = row['트럭대수']
+
+    demand_dict = {}    # {(구간, 트럭유형): 필요대수}
+    for _, row in df_demand.iterrows():
+        key = (row['운송구간'], row['트럭유형'])
+        demand_dict[key] = row['필요대수']
+
+    truckers = df['운송사'].unique()
+    route_type_list = demand_dict.keys()
+
+    #--------------------------------------------------------
+    # 3) PuLP 모델 생성
+    #--------------------------------------------------------
+    prob = LpProblem("Truck_Optimization", LpMinimize)
+
+    #--------------------------------------------------------
+    # 4) 결정변수
+    #--------------------------------------------------------
+    x_vars = {}
+    for (i, r, t), cost in cost_dict.items():
+        x_vars[(i, r, t)] = LpVariable(f"x_{i}_{r}_{t}", lowBound=0, cat=LpInteger)
+
+    y_vars = {i: LpVariable(f"y_{i}", cat='Binary') for i in truckers}
+
+    #--------------------------------------------------------
+    # 5) 목적함수: 총 운송비 최소화
+    #--------------------------------------------------------
+    prob += lpSum([cost_dict[(i, r, t)] * x_vars[(i, r, t)] for (i, r, t) in cost_dict]), "Minimize_TotalCost"
+
+    #--------------------------------------------------------
+    # 6) 제약조건
+    #--------------------------------------------------------
+    # (1) 각 (구간, 트럭유형)에 대한 필요대수 충족
+    for (r, t) in route_type_list:
+        prob += lpSum([x_vars[(i, r, t)] for i in truckers if (i, r, t) in x_vars]) == demand_dict[(r, t)], f"Demand_{r}_{t}"
+
+    # (2) 각 운송사별 보유 트럭 수 제한
+    for (i, r, t), capacity in capacity_dict.items():
+        prob += x_vars[(i, r, t)] <= capacity, f"Capacity_{i}_{r}_{t}"
+
+    # (3) 운송사가 선택되었을 경우에만 트럭 배정
+    for i in truckers:
+        for (r, t) in route_type_list:
+            if (i, r, t) in x_vars:
+                prob += x_vars[(i, r, t)] <= capacity_dict[(i, r, t)] * y_vars[i], f"Truck_Selection_{i}_{r}_{t}"
+
+    # (4) 선택된 운송사 수 제한
+    prob += lpSum([y_vars[i] for i in truckers]) <= max_trucker_num, "Max_Truckers"
+
+    #--------------------------------------------------------
+    # 7) 최적화 실행
+    #--------------------------------------------------------
+    prob.solve(pulp.PULP_CBC_CMD(msg=0))
+    status = prob.status
+
+    print("Status:", pulp.LpStatus[status])
+    if status not in [1, 2]:
+        print("=> 유효한 해를 찾지 못했습니다.")
+        return
+
+    total_cost = value(prob.objective)
+    print("총 운송비:", total_cost)
+
+    #--------------------------------------------------------
+    # 8) 결과 정리 및 저장
+    #--------------------------------------------------------
+    result_data = []
+    for (i, r, t), var in x_vars.items():
+        if var.varValue > 0:
+            result_data.append([i, r, t, cost_dict[(i, r, t)], int(var.varValue)])
+
+    df_result = pd.DataFrame(result_data, columns=['운송사', '운송구간', '트럭유형', '운송단가', '선택된트럭수'])
+    df_result.sort_values(by=['운송구간', '트럭유형'], inplace=True)
+
+    output_file = "/content/sample_data/운송사_최적화결과.xlsx"
+    df_result.to_excel(output_file, index=False)
+
+    print("\n--- 배정 결과 ---")
+    print(df_result.to_string(index=False))
+
+    end_time = time.time()
+    print("\n프로그램 수행시간(초):", round(end_time - start_time, 4))
+
+
+if __name__ == "__main__":
+    optimize_truck_assignment()
+
+
+
