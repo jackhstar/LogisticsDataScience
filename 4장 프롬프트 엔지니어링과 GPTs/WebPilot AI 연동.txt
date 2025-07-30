@@ -1,0 +1,2 @@
+WebPilot AI 연동
+https://builtin.com/artificial-intelligence/turing-test 번역해줘(ChatGPT, Perplexity 실패)
