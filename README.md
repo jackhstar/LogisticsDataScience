@@ -1,11 +1,12 @@
-# LogisticsDataScience
-##『물류데이터 사이언스와 ChatGPT 활용』
+# 『물류데이터 사이언스와 ChatGPT 활용』 
 
 - 본 도서는 중앙대학교 글로벌인적자원개발대학원 글로벌물류학과의 '물류데이터 사이언스와 딥러닝'의 교재이다.
 - 『ChatGPT 실무적용 SCM/물류 데이터분석』 (연세대학교 출판문화원)의 후속 편이다. 
 - 본 사이트에는 『물류데이터 사이언스와 ChatGPT 활용』의 본문에서 언급한 기준정보, ChatGPT 요청문, 파이썬코드 등이 장별로 구분되어 저장되어있다.
 - 본 사이트를 통해서 도서의 추가, 수정 및 오타 내용이 공유될수 있다.
 
-- 한국생산성본부에서'SCM 재고 최적화 전략(ChatGPT 활용)'과 'SCM 운영모델과 ChatGPT 실무적용'과정'을 통해 본 도서의 일부 내용이 저자 직강으로 운영되고 있습니다(아래 밑줄 클릭하여 한국생산성본부 사이트 접속, 강력 추천, 도서 제공).
-  - Lecture_NewInfo/[한국생산성본부_SCM 재고 최적화 전략(ChatGPT 활용)_커리큐럼(황종원박사).pdf](https://www.kpc.or.kr/PTWED003_dtil_view.do?ecno=44786) 참조(2일 과정)
-  - Lecture_NewInfo/[한국생산성본부_SCM 운영모델과 ChatGPT 실무적용_커리큐럼_(황종원박사).pdf](https://www.kpc.or.kr/PTWED003_dtil_view.do?ecno=45746) 참조(3일 과정) 
+- 한국생산성본부에서'SCM 재고 최적화 전략(ChatGPT 활용)'과 'SCM 운영모델과 ChatGPT 실무적용'과정'을 통해
+  『ChatGPT 실무적용 SCM/물류 데이터분석』와 『물류데이터 사이언스와 ChatGPT 활용』의 일부 내용이 저자 직강으로 운영되고 있습니다.
+  (아래 밑줄 클릭하여 한국생산성본부 사이트 접속, 강력 추천, 『ChatGPT 실무적용 SCM/물류 데이터분석』 제공)
+  - [한국생산성본부_SCM 재고 최적화 전략(ChatGPT 활용)(황종원박사)](https://www.kpc.or.kr/PTWED003_dtil_view.do?ecno=44786) 참조(2일 과정)
+  - [한국생산성본부_SCM 운영모델과 ChatGPT 실무적용(황종원박사)](https://www.kpc.or.kr/PTWED003_dtil_view.do?ecno=45746) 참조(3일 과정) 
