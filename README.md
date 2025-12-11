@@ -12,8 +12,8 @@
   『ChatGPT 실무적용 SCM/물류 데이터분석』와 『물류데이터 사이언스와 ChatGPT 활용』의 일부 내용이 저자 직강으로 운영되고 있다.
    - 아래 밑줄 클릭하여 한국생산성본부 사이트 접속하여 상세 커리큐럼을 확인하기 바랍니다(강력 추천, 강의 수강 시  『ChatGPT 실무적용 SCM/물류 데이터분석』도서도 제공합니다.)
    - [한국생산성본부_ChatGPT 활용 SCM 재고 최적화 전략](https://www.kpc.or.kr/PTWED003_dtil_view.do?ecno=47835) (2일 과정)
-   - [한국생산성본부_공급망관리(SCM) 운영모델 혁신(ChatGPT 활용)(https://kpc.or.kr/PTWED003_dtil_view.do?ecno=47833) 참조(3일 과정)
-   - [한국생산성본부_ChatGPT활용 물류 운영 최적화](https://kpc.or.kr/PTWED003_dtil_view.do?ecno=47840) 참조(2일 과정)
+   - [한국생산성본부_공급망관리(SCM) 운영모델 혁신(ChatGPT 활용)](https://kpc.or.kr/PTWED003_dtil_view.do?ecno=47833) (3일 과정)
+   - [한국생산성본부_ChatGPT활용 물류 운영 최적화](https://kpc.or.kr/PTWED003_dtil_view.do?ecno=47840) (2일 과정)
  
 - 본 도서의 일부 오타 내용은 "정오표_물류데이터 사이언스와 ChatGPT 활용_20251103.pdf"을 참조한다.
 
