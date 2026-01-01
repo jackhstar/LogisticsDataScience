@@ -15,5 +15,5 @@
    - [한국생산성본부_공급망관리(SCM) 운영모델 혁신(ChatGPT 활용)](https://kpc.or.kr/PTWED003_dtil_view.do?ecno=47833) (3일 과정)
    - [한국생산성본부_ChatGPT활용 물류 운영 최적화](https://kpc.or.kr/PTWED003_dtil_view.do?ecno=47840) (2일 과정)
  
-- 본 도서의 일부 오타 내용은 "정오표_물류데이터 사이언스와 ChatGPT 활용_20251103.pdf"을 참조한다.
+- 본 도서의 일부 오타 내용은 "정오표_물류데이터 사이언스와 ChatGPT 활용_20260101.pdf"을 참조한다.
 
