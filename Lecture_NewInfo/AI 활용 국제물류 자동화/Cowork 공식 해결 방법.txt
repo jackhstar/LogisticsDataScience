@@ -1,0 +1,11 @@
+공식 해결 방법 (Anthropic 지원 문서 기준):
+
+PowerShell을 관리자 권한으로 열고 아래 명령어로 상태 확인
+
+Get-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform
+Get-Service vmcompute, hns
+
+기능이 비활성화되어 있거나 서비스가 없다면 아래 명령으로 활성화
+
+Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform -All
+**반드시 "다시 시작(Restart)"**으로 재부팅하세요. (종료 후 전원 켜기 방식은 Windows 빠른 시작 때문에 가상화 서비스가 제대로 초기화되지 않을 수 있습니다) 이 오류는 Virtual Machine Platform 서비스 스택이 기기에 등록되지 않았을 때 발생하며, PowerShell로 상태를 확인한 뒤 기능을 다시 활성화하고 종료가 아닌 재시작으로 재부팅해야 합니다 
