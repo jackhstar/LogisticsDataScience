@@ -1,0 +1,53 @@
+요청사항:
+PuLP 라이브러리를 사용하여, 정확히 3개의 창고를 선택하고 모든 소비 도시에 대한 연간 총 물류비를 최소화하는 최적화 문제를 Google Colab 환경에서 실행 가능한 Python 코드로 작성하라.
+
+[최적화 목적]
+- 소비도시 수요에 대해 다음 3가지 비용을 포함한 연간 총 물류비를 최소화할 것:
+  1. 운송비
+  2. 수입물류비
+  3. 창고 운영비
+- 제약 조건:
+  - 창고는 정확히 3개만 선택
+  - 각 소비도시는 단 하나의 창고에서만 공급받음
+
+[입출력 파일 경로]
+- 입력 파일: /content/sample_data/NW_MasterData.xlsx
+- 출력 파일: /content/sample_data/OptimizationResult.xlsx
+
+[비용 계산 공식]
+1. 운송비 (Transport Cost)
+   = 수요량 × 거리 × 창고의 박스당 운송단가
+   ※ 거리 정보는 'Distance' 시트의 FromCity → ToCity 방향 사용, 동일 도시 간 거리는 16km로 고정
+
+2. 수입물류비 (Inbound Logistics Cost)
+   = 수요량 × 창고의 박스당 수입물류비
+
+3. 창고 운영비 (Warehouse Storage Cost)
+   = (수요량 / 재고회전율) × 박스당 월 창고단가 × 12개월 × √3
+   ※ 재고회전율은 12로 고정, 창고 개수는 3개로 고정이므로 √3을 곱해 평균 재고 증가 반영
+
+[입력 파일 시트 설명]
+- 'City' 시트: 소비도시(City), 연간 수요량(Cargo)
+- 'Cost' 시트: 후보 창고(WH), 박스당 운송단가(TruckUnitRate), 수입물류비(InboundRate), 월 창고단가(WHUnitRate)
+- 'Distance' 시트: 출발지(FromCity), 도착지(ToCity), 거리(Distance)
+
+[결과 파일 구조: OptimizationResult.xlsx]
+- City 시트:
+  - 도시, 물동량, 총 물류비, 선택된 창고, 운송비, 수입물류비, 창고비
+- WH 시트:
+  - 창고, 총 수요량, 운송비, 수입물류비, 창고비, 총 물류비
+- Summary 시트:
+  - 항목: 운송비 / 수입물류비 / 창고비 / 총 물류비
+  - 각 항목별 총합
+
+[출력 요구사항: Google Colab 호환]
+- 코드는 !pip install pulp openpyxl 로 필요한 라이브러리를 설치할 것
+- warnings로 거리 정보 누락 시 알림 제공
+- ace_tools 미사용, 대신 print() 및 display()로 결과 출력
+- pulp의 선형제약 조건 위반 없이 LpBinary, LpContinuous 사용하여 선형화 진행
+- 엑셀 저장은 openpyxl 사용 (xlsxwriter 사용 금지)
+
+[화면 출력 형식]
+- Summary 시트: 표 형태로 출력
+- WH 시트: 표 형태로 출력
+- City 시트 중 "New YorkNY" 행: 운송비, 수입물류비, 창고비, 총 물류비 항목만 테이블로 출력
